@@ -1,11 +1,15 @@
-package com.gungoren.hw1.t1;
+package com.gungoren.hw1;
 
 import edu.rit.crypto.blockcipher.AES256Cipher;
 import edu.rit.util.Hex;
 
-public class Encrypt {
+public class EncryptSeq {
 
     public static void main(String[] args) {
+        process();
+    }
+
+    public static void process() {
         String message = FileReader.readFile();
         byte[] key = Hex.toByteArray(FileReader.getKey());
 
@@ -19,7 +23,7 @@ public class Encrypt {
             msg = temp;
         }
         byte[] cipherText = new byte[msg.length];
-        System.out.println(Hex.toString(msg));
+        //System.out.println(Hex.toString(msg));
         long start = System.currentTimeMillis();
         for (int i = 0; i < msg.length / 16; i++) {
             byte[] block = new byte[16];
@@ -29,13 +33,8 @@ public class Encrypt {
             cipher.setKey(key);
             System.arraycopy(block, 0, cipherText, i * block.length, block.length);
         }
-        System.out.println(Hex.toString(cipherText));
-        System.out.println("Complete in " + (System.currentTimeMillis() - start));
-    }
-
-    private static void usage() {
-        System.out.println("Program should work with 3 parameters");
-        System.out.println("\t Encrypt.class message key n");
-        System.exit(1);
+        //System.out.println(Hex.toString(cipherText));
+        System.out.println(EncryptSeq.class.getSimpleName() + " complete in " + (System.currentTimeMillis() - start));
+        return;
     }
 }

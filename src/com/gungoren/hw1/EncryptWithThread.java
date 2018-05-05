@@ -1,4 +1,4 @@
-package com.gungoren.hw1.t1;
+package com.gungoren.hw1;
 
 import edu.rit.crypto.blockcipher.AES256Cipher;
 import edu.rit.util.Hex;
@@ -9,17 +9,23 @@ public class EncryptWithThread extends Thread{
     private static byte[] cipherText;
     private static AES256Cipher cipher;
     private static byte[] key;
-    private int startPos;
 
-    public EncryptWithThread(int start) {
-        this.startPos = start;
+    private int startPos;
+    private int endPos;
+
+    public EncryptWithThread(int startPos, int endPos) {
+        this.startPos = startPos;
+        this.endPos = endPos;
     }
 
     public static void main(String[] args) {
+        process();
+    }
 
+    public static void process() {
         String message = FileReader.readFile();
         key = Hex.toByteArray(FileReader.getKey());
-
+        cipher = new AES256Cipher(key);
         msg = message.getBytes();
 
         if (msg.length % 16 != 0) {
@@ -28,12 +34,15 @@ public class EncryptWithThread extends Thread{
             msg = temp;
         }
         cipherText = new byte[msg.length];
-        System.out.println(Hex.toString(msg));
+        //System.out.println(Hex.toString(msg));
         long start = System.currentTimeMillis();
+        int blockCount = msg.length / 16;
+        int threadCount = 2;
+        int subThreadCount = blockCount / threadCount;
 
-        EncryptWithThread[] threads = new EncryptWithThread[msg.length / 16];
+        EncryptWithThread[] threads = new EncryptWithThread[threadCount];
         for (int i = 0; i < threads.length; i++) {
-            threads[i] = new EncryptWithThread(i);
+            threads[i] = new EncryptWithThread(i, ( i + 1 ) * subThreadCount);
         }
 
         for (EncryptWithThread thread : threads) {
@@ -48,29 +57,24 @@ public class EncryptWithThread extends Thread{
                     complete = false;
             }
             try{
-                Thread.sleep(100);
+                Thread.sleep(20);
             }catch(Exception e)
             {            }
         }
 
-        System.out.println(Hex.toString(cipherText));
-        System.out.println("Complete in " + (System.currentTimeMillis() - start));
+        //System.out.println(Hex.toString(cipherText));
+        System.out.println(EncryptWithThread.class.getSimpleName() + " complete in " + (System.currentTimeMillis() - start));
+        return;
     }
 
     @Override
     public void run() {
-        long start = System.currentTimeMillis();
-        byte[] block = new byte[16];
-        System.arraycopy(msg, startPos * block.length, block, 0, block.length);
-        AES256Cipher cipher = new AES256Cipher(key);
-        cipher.encrypt(block);
-        System.arraycopy(block, 0, cipherText, startPos * block.length, block.length);
+        for (int i = startPos; i < endPos; i++) {
+            byte[] block = new byte[16];
+            System.arraycopy(msg, i * block.length, block, 0, block.length);
+            cipher.encrypt(block);
+            System.arraycopy(block, 0, cipherText, i * block.length, block.length);
+        }
         //System.out.println(startPos + " start " + start + " completed in " + (System.currentTimeMillis() - start));
-    }
-
-    private static void usage() {
-        System.out.println("Program should work with 3 parameters");
-        System.out.println("\t Encrypt.class message key n");
-        System.exit(1);
     }
 }

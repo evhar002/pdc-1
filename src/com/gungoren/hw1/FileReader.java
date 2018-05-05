@@ -1,4 +1,4 @@
-package com.gungoren.hw1.t1;
+package com.gungoren.hw1;
 
 import java.io.*;
 
@@ -6,7 +6,7 @@ public class FileReader {
 
     public static String readFile() {
         try {
-            BufferedReader br = new BufferedReader(new java.io.FileReader(new File(FileReader.class.getResource("plaintext").getPath())));
+            BufferedReader br = new BufferedReader(new java.io.FileReader(new File(FileReader.class.getResource("plaintext_more").getPath())));
             String text = br.readLine();
             return text;
         } catch (FileNotFoundException e) {
@@ -18,6 +18,6 @@ public class FileReader {
     }
 
     public static String getKey () {
-        return "Aa123456Aa123456Aa123456Aa123456Aa123456Aa123456Aa123456Aa123456";
+        return "89f468a10c5a522d4a09d881fdafd54c50aae725a831b920bad9c4913ce5fd40";
     }
 }
