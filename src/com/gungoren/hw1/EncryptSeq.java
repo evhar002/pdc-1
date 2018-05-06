@@ -9,7 +9,7 @@ public class EncryptSeq {
         process();
     }
 
-    public static void process() {
+    public static String process() {
         String message = FileReader.readFile();
         byte[] key = Hex.toByteArray(FileReader.getKey());
 
@@ -25,16 +25,14 @@ public class EncryptSeq {
         byte[] cipherText = new byte[msg.length];
         //System.out.println(Hex.toString(msg));
         long start = System.currentTimeMillis();
-        for (int i = 0; i < msg.length / 16; i++) {
-            byte[] block = new byte[16];
+        byte[] block = new byte[16];
+        for (int i = 0; i < msg.length / block.length; i++) {
             System.arraycopy(msg, i * block.length, block, 0, block.length);
             cipher.encrypt(block);
-            cipher.erase();
-            cipher.setKey(key);
             System.arraycopy(block, 0, cipherText, i * block.length, block.length);
         }
         //System.out.println(Hex.toString(cipherText));
         System.out.println(EncryptSeq.class.getSimpleName() + " complete in " + (System.currentTimeMillis() - start));
-        return;
+        return Hex.toString(cipherText);
     }
 }

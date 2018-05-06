@@ -7,7 +7,6 @@ public class EncryptWithThread extends Thread{
 
     private static byte[] msg;
     private static byte[] cipherText;
-    private static AES256Cipher cipher;
     private static byte[] key;
 
     private int startPos;
@@ -22,10 +21,9 @@ public class EncryptWithThread extends Thread{
         process();
     }
 
-    public static void process() {
+    public static String process() {
         String message = FileReader.readFile();
         key = Hex.toByteArray(FileReader.getKey());
-        cipher = new AES256Cipher(key);
         msg = message.getBytes();
 
         if (msg.length % 16 != 0) {
@@ -64,13 +62,14 @@ public class EncryptWithThread extends Thread{
 
         //System.out.println(Hex.toString(cipherText));
         System.out.println(EncryptWithThread.class.getSimpleName() + " complete in " + (System.currentTimeMillis() - start));
-        return;
+        return Hex.toString(cipherText);
     }
 
     @Override
     public void run() {
+        AES256Cipher cipher = new AES256Cipher(key);
+        byte[] block = new byte[16];
         for (int i = startPos; i < endPos; i++) {
-            byte[] block = new byte[16];
             System.arraycopy(msg, i * block.length, block, 0, block.length);
             cipher.encrypt(block);
             System.arraycopy(block, 0, cipherText, i * block.length, block.length);

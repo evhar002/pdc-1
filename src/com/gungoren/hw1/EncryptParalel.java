@@ -13,10 +13,9 @@ public class EncryptParalel{
         process();
     }
 
-    public static void process() throws Exception {
+    public static String process() throws Exception {
         String message = FileReader.readFile();
         byte[] key = Hex.toByteArray(FileReader.getKey());
-        AES256Cipher aes256Cipher = new AES256Cipher(key);
         msg = message.getBytes();
 
         if (msg.length % 16 != 0) {
@@ -30,17 +29,17 @@ public class EncryptParalel{
 
         int blockCount = msg.length / 16;
         int threadCount = 64;
-        int subThreadCount = blockCount / threadCount;
+        int subThreadCount = blockCount % threadCount == 0 ? blockCount / threadCount : blockCount / threadCount + 1;
         ParallelTeam parallelTeam = new ParallelTeam(threadCount);
         parallelTeam.execute(new ParallelRegion() {
             @Override
             public void run(){
+                AES256Cipher aes256Cipher = new AES256Cipher(key);
                 int start = getThreadIndex() * subThreadCount;
-                int end = (getThreadIndex() + 1) * subThreadCount;
-                //System.out.println("start "+ start + " end " + end + " idx " + getThreadIndex());
+                int end = Math.min((getThreadIndex() + 1) * subThreadCount, blockCount);
                 long s = System.currentTimeMillis();
+                byte[] block = new byte[16];
                 for (int i = start; i < end; i++) {
-                    byte[] block = new byte[16];
                     System.arraycopy(msg, i * block.length, block, 0, block.length);
                     aes256Cipher.encrypt(block);
                     System.arraycopy(block, 0, cipherText, i * block.length, block.length);
@@ -51,6 +50,6 @@ public class EncryptParalel{
 
         //System.out.println(Hex.toString(cipherText));
         System.out.println(EncryptParalel.class.getSimpleName() + " complete in " + (System.currentTimeMillis() - startMillis));
-        return;
+        return Hex.toString(cipherText);
     }
 }

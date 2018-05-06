@@ -8,7 +8,7 @@ public class FileReader {
         try {
             BufferedReader br = new BufferedReader(new java.io.FileReader(new File(FileReader.class.getResource("plaintext_more").getPath())));
             String text = br.readLine();
-            return text;
+            return text + text + text;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
