@@ -35,7 +35,7 @@ public class EncryptWithThread extends Thread{
         //System.out.println(Hex.toString(msg));
         long start = System.currentTimeMillis();
         int blockCount = msg.length / 16;
-        int threadCount = 2;
+        int threadCount = Runtime.getRuntime().availableProcessors();
         int subThreadCount = blockCount / threadCount;
 
         EncryptWithThread[] threads = new EncryptWithThread[threadCount];
@@ -55,7 +55,7 @@ public class EncryptWithThread extends Thread{
                     complete = false;
             }
             try{
-                Thread.sleep(20);
+                Thread.sleep(50);
             }catch(Exception e)
             {            }
         }

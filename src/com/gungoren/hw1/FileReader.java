@@ -6,9 +6,9 @@ public class FileReader {
 
     public static String readFile() {
         try {
-            BufferedReader br = new BufferedReader(new java.io.FileReader(new File(FileReader.class.getResource("plaintext_more").getPath())));
+            BufferedReader br = new BufferedReader(new java.io.FileReader(new File(FileReader.class.getResource("plaintext").getPath())));
             String text = br.readLine();
-            return text + text + text;
+            return text;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
